@@ -1,6 +1,8 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/AleksVedenyev/devops-engineer-from-scratch-project-313/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/AleksVedenyev/devops-engineer-from-scratch-project-313/actions)
 
+[![ci-check](https://github.com/AleksVedenyev/devops-engineer-from-scratch-project-313/actions/workflows/ci.yml/badge.svg)](https://github.com/AleksVedenyev/devops-engineer-from-scratch-project-313/actions/workflows/ci.yml)
+
 ### Links
 
 This project was built using these tools:
