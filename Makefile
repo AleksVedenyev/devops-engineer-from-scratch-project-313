@@ -2,7 +2,7 @@ install:
 	uv sync
 
 run:
-	uv run uvicorn main:app --reload --port 8080
+	uv run uvicorn main:app --port 8080
 
 test:
 	uv run python3 -m pytest
