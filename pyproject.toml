@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.138.1",
+    "sentry-sdk[fastapi]>=2.63.0",
 ]
 
 [dependency-groups]
