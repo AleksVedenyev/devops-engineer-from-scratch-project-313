@@ -5,8 +5,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 
 from main import app, get_session
-from model import Link
-
+from model import Link  # noqa: F401
 
 DB_FILE = "test.db"
 

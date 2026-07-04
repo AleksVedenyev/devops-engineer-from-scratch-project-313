@@ -1,7 +1,8 @@
 import os
 
 from sqlmodel import Session
-from model import CreateLink, Link
+
+from model import Link
 
 BASE_URL = os.getenv('BASE_URL')
 
