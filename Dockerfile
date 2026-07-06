@@ -19,6 +19,8 @@ COPY pyproject.toml ./
 RUN uv sync
 
 RUN npm ci
+RUN ls ./node_modules/@hexlet/
+
 
 COPY . .
 COPY ./node_modules/@hexlet/project-devops-deploy-crud-frontend/dist/. /app/public/
