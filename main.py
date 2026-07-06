@@ -3,13 +3,8 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 import sentry_sdk
-from fastapi import Depends, FastAPI, HTTPException, status
-from sqlmodel import (
-    Session,
-    SQLModel,
-    create_engine,
-    select,
-)
+from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
+from sqlmodel import Session, SQLModel, create_engine, func, select
 
 from model import CreateLink, Link
 
@@ -18,7 +13,7 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/appdb')
+DATABASE_URL = os.getenv('DATABASE_URL', "sqlite:///database.db")
 BASE_URL = os.getenv('BASE_URL')
 
 engine = create_engine(DATABASE_URL)
@@ -44,19 +39,39 @@ def main():
 
 
 @app.get("/api/links")
-def get_links(session: Annotated[Session, Depends(get_session)]):
-    statement = select(Link)
+def get_links(
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    query_range: Annotated[str, Query(alias="range")] = ""
+    ):
+    if query_range == "":
+        query_range = "[0,10]"
+    query_str = query_range[1:-1]
+    range_of_links = [int(el.strip()) for el in query_str.split(",")]
+    index_first_link = range_of_links[0]
+    index_last_link = range_of_links[1]
+    statement = (
+        select(Link)
+        .offset(index_first_link)
+        .limit(index_last_link - index_first_link)
+    )
     result = session.exec(statement)
     links = result.all()
+    total_count = session.exec(select(func.count()).select_from(Link)).one()
+    content_range = (
+        f"links {index_first_link}-{index_last_link}/"
+        f"{total_count}"
+    )
+    response.headers["Content-Range"] = content_range
     final_links = [
-        {
-            "id": link.id,
-            "original_url": link.original_url,
-            "short_name": link.short_name,
-            "short_url": f"{BASE_URL}/r/{link.short_name}",
-        }
-        for link in links
-    ]
+            {
+                "id": link.id,
+                "original_url": link.original_url,
+                "short_name": link.short_name,
+                "short_url": f"{BASE_URL}/r/{link.short_name}",
+            }
+            for link in links
+        ]
     return final_links
 
 
