@@ -18,7 +18,7 @@ COPY uv.lock ./
 COPY pyproject.toml ./
 RUN uv sync
 
-RUN npm ci --only=production
+RUN npm ci
 
 COPY . .
 COPY ./node_modules/@hexlet/project-devops-deploy-crud-frontend/dist/. /app/public/
