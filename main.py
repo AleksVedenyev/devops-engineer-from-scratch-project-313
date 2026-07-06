@@ -3,7 +3,9 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 import sentry_sdk
+from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, SQLModel, create_engine, func, select
 
 from model import CreateLink, Link
@@ -12,6 +14,8 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     traces_sample_rate=1.0,
 )
+
+load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL', "sqlite:///database.db")
 BASE_URL = os.getenv('BASE_URL')
@@ -26,6 +30,20 @@ async def lifespan(app: FastAPI):
     
 
 app = FastAPI(lifespan=lifespan)
+
+
+origins = [
+    "http://localhost:5173"
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_session():
