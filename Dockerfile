@@ -23,6 +23,6 @@ RUN ls ./node_modules/@hexlet/
 
 
 COPY . .
-COPY ./node_modules/@hexlet/project-devops-deploy-crud-frontend/dist/. /app/public/
+RUN cp -r ./node_modules/@hexlet/project-devops-deploy-crud-frontend/dist/. /app/public/
 
 CMD ["start", "nginx", "uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
