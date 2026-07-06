@@ -1,8 +1,4 @@
-FROM python:3.14.2-slim-bullseye
-
-# Use a Debian slim base to avoid known high vulnerabilities present in some alpine images
-# and keep Python as the primary runtime. Install Node 22 from NodeSource to provide
-# compatible Node tooling without switching to an alpine image.
+FROM python:3.14-slim
 
 # Install only required packages, avoid recommended ones and clean up lists to reduce image size
 RUN apt-get update \
