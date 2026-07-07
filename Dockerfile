@@ -24,7 +24,8 @@ RUN ls ./node_modules/@hexlet/
 
 COPY . .
 RUN cp -r ./node_modules/@hexlet/project-devops-deploy-crud-frontend/dist/. /app/public/
-RUN cp -r ./my_domain.conf /etc/nginx/sites-available
+RUN cp -r ./my_domain.conf /etc/nginx/sites-available/my-site.conf
+RUN ln -s /etc/nginx/sites-available/my-site.conf /etc/nginx/sites-enabled/my-site.conf
 RUN chmod 755 ./start.sh
 
 CMD ["./start.sh"]
