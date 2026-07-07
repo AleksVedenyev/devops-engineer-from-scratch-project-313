@@ -37,7 +37,7 @@ jobs:
         run: uv sync --frozen
 
       - name: Ruff check
-        run: uv run ruff check .
+        run: make lint
 
       - name: Pytest
-        run: uv run python3 -m pytest
+        run: make test
