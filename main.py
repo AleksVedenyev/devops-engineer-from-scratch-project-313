@@ -59,8 +59,13 @@ def get_session():
         yield session
 
 
+@app.get("/ping")
+def main():
+    return "pong"
+
+
 @app.get("/api/links")
-def main(
+def get_links(
     session: Annotated[Session, Depends(get_session)],
     response: Response,
     query_range: Annotated[str, Query(alias="range")] = ""
