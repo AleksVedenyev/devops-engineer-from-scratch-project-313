@@ -9,13 +9,13 @@ BASE_URL = os.getenv('BASE_URL')
 
 def test_create_link(client):
     response = client.post("/api/links", json={
-        "original_url": "yandex.ru",
+        "original_url": "https://yandex.ru",
         "short_name": "ya"
     })
     assert response.status_code == 201
     assert response.json() == {
         "id": response.json()['id'],
-        "original_url": "yandex.ru",
+        "original_url": "https://yandex.ru/",
         "short_name": "ya",
         "short_url": f"{BASE_URL}/r/ya"
     }
@@ -24,11 +24,11 @@ def test_create_link(client):
 def test_get_links(client, test_db):
     with Session(test_db) as session:
         link1 = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         link2 = Link(
-            original_url="google.com",
+            original_url="https://google.com",  # type: ignore
             short_name="gogl"
         )
         session.add(link1)
@@ -56,19 +56,19 @@ def test_get_links(client, test_db):
 def test_get_links_with_range(client, test_db):
     with Session(test_db) as session:
         link1 = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         link2 = Link(
-            original_url="google.com",
+            original_url="https://google.com",  # type: ignore
             short_name="gogl"
         )
         link3 = Link(
-            original_url="bing.com",
+            original_url="https://bing.com",  # type: ignore
             short_name="bing"
         )
         link4 = Link(
-            original_url="example.com",
+            original_url="https://example.com",  # type: ignore
             short_name="exmpl"
         )
         session.add(link1)
@@ -104,19 +104,19 @@ def test_get_links_with_range(client, test_db):
 def test_get_links_with_range2(client, test_db):
     with Session(test_db) as session:
         link1 = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         link2 = Link(
-            original_url="google.com",
+            original_url="https://google.com",  # type: ignore
             short_name="gogl"
         )
         link3 = Link(
-            original_url="bing.com",
+            original_url="https://bing.com",  # type: ignore
             short_name="bing"
         )
         link4 = Link(
-            original_url="example.com",
+            original_url="https://example.com",  # type: ignore
             short_name="exmpl"
         )
         session.add(link1)
@@ -146,7 +146,7 @@ def test_get_links_with_range2(client, test_db):
 def test_get_link(client, test_db):
     with Session(test_db) as session:
         link1 = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         session.add(link1)
@@ -164,19 +164,19 @@ def test_get_link(client, test_db):
 def test_put_link(client, test_db):
     with Session(test_db) as session:
         link = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         session.add(link)
         session.commit()
         response = client.put(f"/api/links/{link.id}", json={
-            "original_url": "google.com",
+            "original_url": "https://google.com",  # type: ignore
             "short_name": "gogl"
         })
         assert response.status_code == 200
         assert response.json() == {
             "id": link.id,
-            "original_url": "google.com",
+            "original_url": "https://google.com/",  # type: ignore
             "short_name": "gogl",
             "short_url": f"{BASE_URL}/r/gogl"
         }
@@ -185,11 +185,11 @@ def test_put_link(client, test_db):
 def test_delete_link(client, test_db):
     with Session(test_db) as session:
         link1 = Link(
-            original_url="yandex.ru",
+            original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
         link2 = Link(
-            original_url="google.com",
+            original_url="https://google.com",  # type: ignore
             short_name="gogl"
         )
         session.add(link1)

@@ -2,12 +2,12 @@ from datetime import datetime
 
 from pydantic import AnyHttpUrl
 from sqlalchemy import func
-from sqlmodel import AutoString, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class Link(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    original_url: AnyHttpUrl = Field(sa_type=AutoString)
+    original_url: str
     short_name: str = Field(unique=True)
     created_at: datetime | None = Field(
         default=None,

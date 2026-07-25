@@ -107,7 +107,7 @@ def create_link(
     session: Annotated[Session, Depends(get_session)],
 ):  
     result = Link(
-        original_url=new_link.original_url,
+        original_url=str(new_link.original_url),
         short_name=new_link.short_name,
         )
     statement = select(Link).where(Link.short_name == result.short_name)
@@ -174,7 +174,7 @@ def update_link(
         status_code=status.HTTP_404_NOT_FOUND, 
         detail="Item not found"
     )
-    current_link.original_url = new_link.original_url
+    current_link.original_url = str(new_link.original_url)
     current_link.short_name = new_link.short_name
     session.add(current_link)
     session.commit()
