@@ -182,6 +182,22 @@ def test_put_link(client, test_db):
         }
 
 
+def test_put_link_with_existing_short_name(client, test_db):
+    with Session(test_db) as session:
+        link = Link(
+            original_url="https://yandex.ru",  # type: ignore
+            short_name="ya"
+        )
+        session.add(link)
+        session.commit()
+        response = client.put(f"/api/links/{link.id}", json={
+            "original_url": "https://google.com",  # type: ignore
+            "short_name": "ya"
+        })
+        assert response.status_code == 409
+        assert response.json() == {"detail": "Short name already exist"}
+
+
 def test_delete_link(client, test_db):
     with Session(test_db) as session:
         link1 = Link(

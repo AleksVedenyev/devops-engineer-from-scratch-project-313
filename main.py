@@ -174,6 +174,17 @@ def update_link(
         status_code=status.HTTP_404_NOT_FOUND, 
         detail="Item not found"
     )
+    statement_for_link_with_short_name = (
+        select(Link).where(Link.short_name == new_link.short_name)
+    )
+    link_with_short_name = session.exec(
+        statement_for_link_with_short_name
+    ).first()
+    if link_with_short_name:
+        raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT, 
+        detail="Short name already exist"
+    )
     current_link.original_url = str(new_link.original_url)
     current_link.short_name = new_link.short_name
     session.add(current_link)
@@ -181,9 +192,9 @@ def update_link(
     session.refresh(current_link)
     return {
             "id": id,
-            "original_url": new_link.original_url,
-            "short_name": new_link.short_name,
-            "short_url": f"{BASE_URL}/r/{new_link.short_name}",
+            "original_url": current_link.original_url,
+            "short_name": current_link.short_name,
+            "short_url": f"{BASE_URL}/r/{current_link.short_name}",
         }
 
 
