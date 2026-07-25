@@ -143,7 +143,9 @@ def get_link(id: int, session: Annotated[Session, Depends(get_session)]):
 
 
 @app.get("/r/{short_name}")
-def get_link_with_short_name(short_name: str, session: Annotated[Session, Depends(get_session)]):
+def get_link_with_short_name(
+    short_name: str, session: Annotated[Session, Depends(get_session)]
+):
     statement = select(Link).where(Link.short_name == short_name)
     current_link = session.exec(statement).first()
     if current_link:
@@ -152,6 +154,7 @@ def get_link_with_short_name(short_name: str, session: Annotated[Session, Depend
         status_code=status.HTTP_404_NOT_FOUND, 
         detail="Item not found"
     )
+
 
 @app.put("/api/links/{id}", status_code=200)
 def update_link(
@@ -193,7 +196,3 @@ def delete_link(
     )
     session.delete(current_link)
     session.commit()
-
-
-if __name__ == "__main__":
-    main()
