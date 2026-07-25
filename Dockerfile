@@ -2,7 +2,7 @@ FROM python:3.14-slim
 
 # Install only required packages, avoid recommended ones and clean up lists to reduce image size
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends curl ca-certificates gnupg2 ca-certificates lsb-release \
+	&& apt-get install -y --no-install-recommends curl ca-certificates gnupg2 lsb-release \
 	&& curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 	&& apt-get install -y --no-install-recommends nodejs \
     && apt-get install -y --no-install-recommends nginx \

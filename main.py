@@ -6,16 +6,17 @@ import sentry_sdk
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from sqlmodel import Session, SQLModel, create_engine, func, select
 
 from model import CreateLink, Link
+
+load_dotenv()
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     traces_sample_rate=1.0,
 )
-
-load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL', "sqlite:///database.db")
 BASE_URL = os.getenv('BASE_URL')
@@ -58,13 +59,8 @@ def get_session():
         yield session
 
 
-@app.get("/ping")
-def main():
-    return "pong"
-
-
 @app.get("/api/links")
-def get_links(
+def main(
     session: Annotated[Session, Depends(get_session)],
     response: Response,
     query_range: Annotated[str, Query(alias="range")] = ""
@@ -145,6 +141,17 @@ def get_link(id: int, session: Annotated[Session, Depends(get_session)]):
         detail="Item not found"
     )
 
+
+@app.get("/r/{short_name}")
+def get_link_with_short_name(short_name: str, session: Annotated[Session, Depends(get_session)]):
+    statement = select(Link).where(Link.short_name == short_name)
+    current_link = session.exec(statement).first()
+    if current_link:
+        return RedirectResponse(url=f"{current_link.original_url}")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, 
+        detail="Item not found"
+    )
 
 @app.put("/api/links/{id}", status_code=200)
 def update_link(
