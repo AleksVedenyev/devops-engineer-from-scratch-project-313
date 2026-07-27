@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from sqlmodel import Session, SQLModel, create_engine, func, select
+from sqlmodel import Session, SQLModel, col, create_engine, func, select
 
 from model import CreateLink, Link
 
@@ -19,7 +19,7 @@ sentry_sdk.init(
 )
 
 DATABASE_URL = os.getenv('DATABASE_URL', "sqlite:///database.db")
-BASE_URL = os.getenv('BASE_URL')
+BASE_URL = os.getenv('BASE_URL', "http://localhost:8080")
 
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace(
@@ -70,14 +70,25 @@ def get_links(
     response: Response,
     query_range: Annotated[str, Query(alias="range")] = ""
     ):
-    if query_range == "":
-        query_range = "[0,10]"
-    query_str = query_range[1:-1]
-    range_of_links = [int(el.strip()) for el in query_str.split(",")]
-    index_first_link = range_of_links[0]
-    index_last_link = range_of_links[1]
+    index_first_link = 0
+    index_last_link = 10
+
+    if query_range:
+        try:
+            clean_str = query_range.strip("[]")
+            range_of_links = [int(el.strip()) for el in clean_str.split(",")]
+            if (
+                len(range_of_links) == 2
+                and range_of_links[0] <= range_of_links[1]
+            ):
+                index_first_link = range_of_links[0]
+                index_last_link = range_of_links[1]
+        except ValueError:
+            pass
+    
     statement = (
         select(Link)
+        .order_by(col(Link.id))
         .offset(index_first_link)
         .limit(index_last_link - index_first_link)
     )
@@ -113,12 +124,10 @@ def create_link(
     statement = select(Link).where(Link.short_name == result.short_name)
     current_link = session.exec(statement).first()
     if current_link:
-        return {
-            "id": current_link.id,
-            "original_url": current_link.original_url,
-            "short_name": current_link.short_name,
-            "short_url": f"{BASE_URL}/r/{current_link.short_name}",
-            }
+        raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, 
+                detail="Short name already exist"
+            )
     session.add(result)
     session.commit()
     session.refresh(result)
@@ -180,7 +189,7 @@ def update_link(
     link_with_short_name = session.exec(
         statement_for_link_with_short_name
     ).first()
-    if link_with_short_name:
+    if link_with_short_name and link_with_short_name.id != id:
         raise HTTPException(
         status_code=status.HTTP_409_CONFLICT, 
         detail="Short name already exist"

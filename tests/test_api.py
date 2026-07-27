@@ -184,13 +184,18 @@ def test_put_link(client, test_db):
 
 def test_put_link_with_existing_short_name(client, test_db):
     with Session(test_db) as session:
-        link = Link(
+        link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
             short_name="ya"
         )
-        session.add(link)
+        link2 = Link(
+            original_url="https://google.com",  # type: ignore
+            short_name="gogl"
+        )
+        session.add(link1)
+        session.add(link2)
         session.commit()
-        response = client.put(f"/api/links/{link.id}", json={
+        response = client.put(f"/api/links/{link2.id}", json={
             "original_url": "https://google.com",  # type: ignore
             "short_name": "ya"
         })
