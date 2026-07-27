@@ -1,13 +1,9 @@
-import os
-
 from sqlmodel import Session
 
 from model import Link
 
-BASE_URL = os.getenv('BASE_URL')
 
-
-def test_create_link(client):
+def test_create_link(client, base_url):
     response = client.post("/api/links", json={
         "original_url": "https://yandex.ru",
         "short_name": "ya"
@@ -17,11 +13,11 @@ def test_create_link(client):
         "id": response.json()['id'],
         "original_url": "https://yandex.ru/",
         "short_name": "ya",
-        "short_url": f"{BASE_URL}/r/ya"
+        "short_url": f"{base_url}/r/ya"
     }
 
 
-def test_get_links(client, test_db):
+def test_get_links(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -42,18 +38,18 @@ def test_get_links(client, test_db):
             "id": link1.id,
             "original_url": link1.original_url,
             "short_name": link1.short_name,
-            "short_url": f"{BASE_URL}/r/{link1.short_name}"
+            "short_url": f"{base_url}/r/{link1.short_name}"
         },
         {
             "id": link2.id,
             "original_url": link2.original_url,
             "short_name": link2.short_name,
-            "short_url": f"{BASE_URL}/r/{link2.short_name}"
+            "short_url": f"{base_url}/r/{link2.short_name}"
         }
         ]
 
 
-def test_get_links_with_range(client, test_db):
+def test_get_links_with_range(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -84,24 +80,24 @@ def test_get_links_with_range(client, test_db):
             "id": link1.id,
             "original_url": link1.original_url,
             "short_name": link1.short_name,
-            "short_url": f"{BASE_URL}/r/{link1.short_name}"
+            "short_url": f"{base_url}/r/{link1.short_name}"
         },
         {
             "id": link2.id,
             "original_url": link2.original_url,
             "short_name": link2.short_name,
-            "short_url": f"{BASE_URL}/r/{link2.short_name}"
+            "short_url": f"{base_url}/r/{link2.short_name}"
         },
         {
             "id": link3.id,
             "original_url": link3.original_url,
             "short_name": link3.short_name,
-            "short_url": f"{BASE_URL}/r/{link3.short_name}"
+            "short_url": f"{base_url}/r/{link3.short_name}"
         }
         ]
 
 
-def test_get_links_with_range2(client, test_db):
+def test_get_links_with_range2(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -132,18 +128,18 @@ def test_get_links_with_range2(client, test_db):
             "id": link3.id,
             "original_url": link3.original_url,
             "short_name": link3.short_name,
-            "short_url": f"{BASE_URL}/r/{link3.short_name}"
+            "short_url": f"{base_url}/r/{link3.short_name}"
         },
         {
             "id": link4.id,
             "original_url": link4.original_url,
             "short_name": link4.short_name,
-            "short_url": f"{BASE_URL}/r/{link4.short_name}"
+            "short_url": f"{base_url}/r/{link4.short_name}"
         }
         ]
 
 
-def test_get_link(client, test_db):
+def test_get_link(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -157,11 +153,11 @@ def test_get_link(client, test_db):
             "id": link1.id,
             "original_url": link1.original_url,
             "short_name": link1.short_name,
-            "short_url": f"{BASE_URL}/r/{link1.short_name}"
+            "short_url": f"{base_url}/r/{link1.short_name}"
         }
 
 
-def test_put_link(client, test_db):
+def test_put_link(client, test_db, base_url):
     with Session(test_db) as session:
         link = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -178,11 +174,11 @@ def test_put_link(client, test_db):
             "id": link.id,
             "original_url": "https://google.com/",  # type: ignore
             "short_name": "gogl",
-            "short_url": f"{BASE_URL}/r/gogl"
+            "short_url": f"{base_url}/r/gogl"
         }
 
 
-def test_put_link_with_existing_short_name(client, test_db):
+def test_put_link_with_existing_short_name(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -203,7 +199,7 @@ def test_put_link_with_existing_short_name(client, test_db):
         assert response.json() == {"detail": "Short name already exist"}
 
 
-def test_delete_link(client, test_db):
+def test_delete_link(client, test_db, base_url):
     with Session(test_db) as session:
         link1 = Link(
             original_url="https://yandex.ru",  # type: ignore
@@ -224,6 +220,6 @@ def test_delete_link(client, test_db):
             "id": link1.id,
             "original_url": link1.original_url,
             "short_name": link1.short_name,
-            "short_url": f"{BASE_URL}/r/{link1.short_name}"
+            "short_url": f"{base_url}/r/{link1.short_name}"
         }
         ]

@@ -5,9 +5,13 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 
 from main import app, get_session
-from model import Link  # noqa: F401
 
 DB_FILE = "test.db"
+
+
+@pytest.fixture
+def base_url():
+    return os.getenv("BASE_URL", "http://localhost:8080")
 
 
 @pytest.fixture
